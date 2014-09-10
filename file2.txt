@@ -1,0 +1,35 @@
+
+
+#include <SoftwareSerial.h>
+#define rxPin 18
+#define txPin 18
+SoftwareSerial MySerial = SoftwareSerial(rxPin,txPin);
+int gp2;
+float distance;
+void setup (){
+  pinMode(txPin,OUTPUT);
+  MySerial.begin(9600);
+  delay(1000);
+}
+void LCD_CMD(int Command){
+  MySerial.write(0xFE);      //Command
+  MySerial.write(Command);
+}
+void loop(){
+  gp2=0.9*gp2+0.1*analogRead(2);
+  distance=(2914/(gp2+5))-1;      //COnvert to Centimeter
+  LCD_CMD(0x80);                  //First Line
+  MySerial.print("RAW Data=    "); //Show Raw data
+  LCD_CMD(0x8A);
+  MySerial.print(gp2,DEC);
+  
+  LCD_CMD(0xC0);                   //Second Line  
+  MySerial.print("Distance=   ");  // Show distance in Centimeter
+  LCD_CMD(0xCA);
+  MySerial.print(distance,DEC);
+  LCD_CMD(0xCE);
+  MySerial.print("CM");
+  delay (200);
+}
+  
+  
